@@ -16,6 +16,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Make bin/ scripts executable
+        run: chmod +x bin/*
       - name: Scan for Rails vulnerabilities
         run: bin/brakeman --no-pager
 
@@ -29,6 +31,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Make bin/ scripts executable
+        run: chmod +x bin/*
       - name: Audit JavaScript dependencies
         run: bin/importmap audit
 
@@ -42,6 +46,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Make bin/ scripts executable
+        run: chmod +x bin/*
       - name: Run Rubocop
         run: bin/rubocop -f github
 
@@ -57,6 +63,8 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Make bin/ scripts executable
+        run: chmod +x bin/*
       - name: Prepare test database
         env:
           RAILS_ENV: test
