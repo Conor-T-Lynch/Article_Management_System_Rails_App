@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <title><%= content_for(:title) || "Login / Sign Up" %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="navbar-brand">Article Management System</div>
+      </nav>
+    </header>
+    <div class="content-wrapper">
+      <%= yield %>
+    </div>
+  </body>
+</html>
