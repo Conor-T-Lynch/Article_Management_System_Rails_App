@@ -33,8 +33,9 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          # Disable host key checking (to bypass the host verification)
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./ ubuntu@3.70.216.235:/home/ubuntu/Article_Management_System_Rails_App
+          # Ensure the current directory is used in the SCP command
+          echo "Current directory: $(pwd)"
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r $(pwd) ubuntu@3.70.216.235:/home/ubuntu/Article_Management_System_Rails_App
 
       - name: Run deploy script
         run: |
