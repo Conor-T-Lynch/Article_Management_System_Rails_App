@@ -9,21 +9,31 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up SSH Agent and add the private key from GitHub Secrets
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 
+      # Copy files to EC2 using SCP
       - name: Copy files to EC2
         run: |
-          scp -i ${{ secrets.EC2_SSH_PRIVATE_KEY }} -r . ubuntu@3.70.216.235:/home/ubuntu/Article_Management_System_Rails_App
+          # Ensure the private key is saved to a file
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # Use SCP to copy the files to the EC2 instance
+          scp -i ~/.ssh/id_rsa -r ./ ubuntu@3.70.216.235:/home/ubuntu/Article_Management_System_Rails_App
 
+      # Run deployment commands on the EC2 instance via SSH
       - name: Run deploy script
         run: |
-          ssh -i ${{ secrets.EC2_SSH_PRIVATE_KEY }} ubuntu@3.70.216.235 << 'EOF'
+          # Ensure SSH key is properly used for the connection
+          ssh -i ~/.ssh/id_rsa ubuntu@3.70.216.235 << 'EOF'
             cd /home/ubuntu/Article_Management_System_Rails_App
             git pull origin main
             bundle install
