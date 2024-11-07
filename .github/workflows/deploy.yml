@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy Rails App to EC2
 
 on:
   push:
@@ -12,38 +12,53 @@ jobs:
 
     steps:
 
-
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-
-
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-
-      - name: Ensure the private key is saved to a file
-        run: |
-
-
         
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Copy files to EC2
-        run: |
-          # Ensure the current directory is used in the SCP command
-          echo "Current directory: $(pwd)"
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r $(pwd) ubuntu@3.70.216.235:/home/ubuntu/Article_Management_System_Rails_App
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2' # specify your Ruby version
+        bundler-cache: true
 
-      - name: Run deploy script
-        run: |
-          # Disable host key checking (to bypass the host verification)
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@3.70.216.235 << 'EOF'
-            cd /home/ubuntu/Article_Management_System_Rails_App
-            git pull origin main
-            bundle install
-            rails db:migrate
-            rails server -b 0.0.0.0 -e production
-          EOF
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libpq-dev
+        bundle install
+
+    - name: Set up SSH key
+      run: |
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+      env:
+        EC2_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+
+
+    - name: Add EC2 instance to known hosts
+      run: |
+        ssh-keyscan -H 3.70.216.235 >> ~/.ssh/known_hosts
+
+    - name: Deploy to EC2
+      run: |
+        # Disable host key checking (to bypass the host verification)
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@3.70.216.235 << 'EOF'
+          # Stop any process using port 3000
+          sudo lsof -t -i:3000 | xargs sudo kill -9
+          
+          # Navigate to the app directory
+          cd /home/ubuntu/Article_Management_System_Rails_App
+          
+          # Pull the latest changes from the main branch
+          git pull origin main
+          
+          # Install any new gems
+          bundle install
+          
+          # Run migrations if necessary
+          rails db:migrate RAILS_ENV=production
+          
+          # Start the Rails server in the background (on port 3000 or 3001 if necessary)
+          nohup rails server -b 0.0.0.0 -e production -p 3000 &
+        EOF
