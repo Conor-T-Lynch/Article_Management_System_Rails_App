@@ -1,0 +1,32 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+
+      - name: Copy files to EC2
+        run: |
+          scp -i ${{ secrets.EC2_SSH_PRIVATE_KEY }} -r . ubuntu@3.70.216.235:/home/ubuntu/Article_Management_System_Rails_App
+
+      - name: Run deploy script
+        run: |
+          ssh -i ${{ secrets.EC2_SSH_PRIVATE_KEY }} ubuntu@3.70.216.235 << 'EOF'
+            cd /home/ubuntu/Article_Management_System_Rails_App
+            git pull origin main
+            bundle install
+            rails db:migrate
+            rails server -b 0.0.0.0 -e production
+          EOF
