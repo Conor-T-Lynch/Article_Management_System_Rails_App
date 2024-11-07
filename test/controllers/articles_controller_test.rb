@@ -8,7 +8,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     @article = articles(:one)
     # user signed in before the tests run (using the users fixture)
     @user = users(:one)
-    sign_in @user       
+    sign_in @user
   end
 
   test "should get index" do

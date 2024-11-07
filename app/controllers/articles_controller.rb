@@ -10,7 +10,7 @@ class ArticlesController < ApplicationController
       @articles = Article.all
     end
   end
-  
+
   # GET /articles/1 or /articles/1.json
   def show
   end
@@ -23,7 +23,7 @@ class ArticlesController < ApplicationController
   # GET /articles/1/edit
   def edit
     @article = Article.find(params[:id])
-  
+
     # Check if the current user is the article's owner
     unless @article.user == current_user
       redirect_to articles_path, alert: "You are not authorized to edit this article."
@@ -35,7 +35,7 @@ class ArticlesController < ApplicationController
     @article = Article.new(article_params)
     # Associate the article with the current user
     @article.user = current_user
-  
+
     respond_to do |format|
       if @article.save
         format.html { redirect_to @article, notice: "Article was successfully created." }
@@ -50,7 +50,7 @@ class ArticlesController < ApplicationController
   # PATCH/PUT /articles/1 or /articles/1.json
   def update
     @article = Article.find(params[:id])
-  
+
     # Check if the current user is the article's owner
     if @article.user == current_user
       respond_to do |format|
@@ -71,11 +71,11 @@ class ArticlesController < ApplicationController
   # DELETE /articles/1 or /articles/1.json
   def destroy
     @article = Article.find(params[:id])
-  
+
     # Check if the current user is the article's owner
     if @article.user == current_user
       @article.destroy
-  
+
       respond_to do |format|
         format.html { redirect_to articles_path, status: :see_other, notice: "Article was successfully destroyed." }
         format.json { head :no_content }

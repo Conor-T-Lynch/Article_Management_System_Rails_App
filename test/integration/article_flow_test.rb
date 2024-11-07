@@ -5,7 +5,7 @@ class ArticleFlowTest < ActionDispatch::IntegrationTest
     # Using the fixture user
     @user = users(:one)
     # Sign in the user
-    sign_in @user 
+    sign_in @user
   end
 
   test "can create, view, edit, and destroy an article" do

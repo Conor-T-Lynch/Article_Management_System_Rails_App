@@ -7,7 +7,7 @@ class UserLoginTest < ApplicationSystemTestCase
 
   test "user can log in" do
     # Navigate to the login page
-    visit new_user_session_path  
+    visit new_user_session_path
     # Fill in the email
     fill_in "Email", with: @user.email
     # Fill in the password

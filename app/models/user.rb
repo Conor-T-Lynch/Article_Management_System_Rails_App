@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  #devise modules that are included for user management and authentication
+  # devise modules that are included for user management and authentication
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 

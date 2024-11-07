@@ -1,7 +1,3 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-
-    layout 'sessions'
-
-    
-  end
-  
+    layout "sessions"
+end

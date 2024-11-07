@@ -16,7 +16,7 @@ class ArticleSearchTest < ActionDispatch::IntegrationTest
   test "search returns relevant articles" do
     # Perform a search for the term "Ruby"
     get articles_path, params: { query: "Ruby" }
-    
+
     # Check that the response is successful
     assert_response :success
 
@@ -30,7 +30,7 @@ class ArticleSearchTest < ActionDispatch::IntegrationTest
   test "search with no matches" do
     # Perform a search for a term that has no matches
     get articles_path, params: { query: "Nonexistent Term" }
-    
+
     # Check that the response is successful
     assert_response :success
 
