@@ -4,7 +4,7 @@ gem "rails-observers"
 # adding signup/login system
 gem "devise"
 # bootstrap
-gem "bootstrap", "~> 5.1.3"
+gem "bootstrap", "~> 5.3.3"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.2.1", ">= 7.2.1.1"
 gem "activesupport"
