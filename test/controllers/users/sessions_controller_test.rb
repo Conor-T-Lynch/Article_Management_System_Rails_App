@@ -10,7 +10,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     post user_session_path, params: {
       user: {
         email: user.email,
-        password: 'password',
+        password: "password"
       }
     }
 
@@ -26,7 +26,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     post user_session_path, params: {
       user: {
         email: "wrong@example.com",
-        password: "incorrect_password",
+        password: "incorrect_password"
       }
     }
 
@@ -47,5 +47,4 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       assert_equal "/unauthenticated", path
       assert_nil session["warden.user.user.key"]
   end
-
 end

@@ -5,7 +5,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   # Test successful user registration
   test "should register a new user with valid parameters" do
-    assert_difference 'User.count', 1 do
+    assert_difference "User.count", 1 do
       post user_registration_path, params: {
         user: {
           email: "testuser@example.com",
@@ -19,7 +19,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   # Test registration with invalid parameters
   test "should not register a user with invalid parameters" do
-    assert_no_difference 'User.count' do
+    assert_no_difference "User.count" do
       post user_registration_path, params: {
         user: {
           email: "invalid-email",
