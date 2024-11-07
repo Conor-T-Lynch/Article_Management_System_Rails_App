@@ -19,7 +19,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 
-      # Copy files to EC2 using SCP
+      # Copy RSA key files to EC2 using SCP
       - name: Copy files to EC2
         run: |
           # Ensure the private key is saved to a file
