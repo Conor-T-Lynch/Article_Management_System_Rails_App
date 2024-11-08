@@ -80,7 +80,7 @@ Rails.application.configure do
   # caching is enabled.
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: '18.194.204.167', protocol: 'http' }
+  config.action_mailer.default_url_options = { host: "18.194.204.167", protocol: "http" }
 
 
   # Ignore bad email addresses and do not raise email delivery errors.
