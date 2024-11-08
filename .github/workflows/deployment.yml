@@ -34,13 +34,20 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY_BASE64 }}" | base64 --decode > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY_BASE64 }}" | base64 --decode > ~/.ssh/RSA.pem
+          chmod 600 ~/.ssh/RSA.pem
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy application
+      - name: SSH into EC2 and navigate to Rails app
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
         run: |
-          ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /path/to/your/app
-            # Pull the latest code, restart server, etc.
+          ssh -i ~/.ssh/RSA.pem ubuntu@$HOST << 'EOF'
+            cd ~/Article_Management_System_Rails_App
+            # Pull the latest code
+            git pull origin main
+            # Install any new dependencies
+            bundle install
+            # Restart the Rails app server
+            rails s -d
           EOF
