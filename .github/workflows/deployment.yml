@@ -1,0 +1,50 @@
+name: Deploy Rails App to EC2
+
+on:
+  push:
+    branches:
+        # Trigger deployment on push to main branch
+      - main
+  # Allow manual trigger of the workflow  
+  workflow_dispatch:  
+
+jobs:
+  deploy:
+    # Use Ubuntu runner for GitHub Actions
+    runs-on: ubuntu-latest  
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Ruby (you can change the Ruby version as needed)
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.5'  # Specify the Ruby version used by your app
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      # Set up SSH access to EC2 instance
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      # Deploy the app to the EC2 instance
+      - name: Deploy to EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd /path/to/your/rails/app  # Navigate to the Rails app directory on the EC2 instance
+            git pull origin main  # Pull the latest code from GitHub
+            bundle install  # Install any new gems
+            RAILS_ENV=production rake db:migrate  # Run any database migrations
+            touch tmp/restart.txt  # Restart the app (if using Passenger or Puma)
+          EOF
