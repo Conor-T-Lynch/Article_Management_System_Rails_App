@@ -38,9 +38,16 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/RSA.pem
           chmod 600 ~/.ssh/RSA.pem
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          ls -la ~/.ssh  # Check permissions
+          cat ~/.ssh/RSA.pem | wc -l  # Verify key lines
 
-      # SSH into EC2 and navigate to Rails app
-      - name: SSH into EC2 and deploy app
+      - name: Test SSH Connection
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh -i ~/.ssh/RSA.pem -o StrictHostKeyChecking=no ubuntu@$HOST "echo 'Connection successful'"
+
+      - name: Deploy to EC2
         env:
           HOST: ${{ secrets.EC2_HOST }}
         run: |
