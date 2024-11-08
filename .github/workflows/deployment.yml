@@ -1,4 +1,4 @@
-name: Deploy Rails App to EC2
+name: Deploy to EC2
 
 on:
   push:
@@ -34,17 +34,13 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo -e "${{ secrets.EC2_SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY_BASE64 }}" | base64 --decode > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Deploy the app to the EC2 instance
-      - name: Deploy to EC2
+      - name: Deploy application
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /path/to/your/rails/app  # Navigate to the Rails app directory on the EC2 instance
-            git pull origin main  # Pull the latest code from GitHub
-            bundle install  # Install any new gems
-            RAILS_ENV=production rake db:migrate  # Run any database migrations
-            touch tmp/restart.txt  # Restart the app (if using Passenger or Puma)
+          ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            cd /path/to/your/app
+            # Pull the latest code, restart server, etc.
           EOF
