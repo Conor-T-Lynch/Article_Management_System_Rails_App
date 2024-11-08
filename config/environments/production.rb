@@ -95,7 +95,7 @@ Rails.application.configure do
       enable_starttls_auto: true
     }
 
-    config.action_mailer.default_url_options = { host: "18.194.204.167", protocol: "http" }
+    config.action_mailer.default_url_options = { host: "18.194.204.167", port: 3000 }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

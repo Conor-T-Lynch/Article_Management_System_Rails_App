@@ -9,7 +9,7 @@ class User < ApplicationRecord
   # method for sending password reset instructions overriden
   def send_reset_password_instructions
     # original method being called that performs the actual password reset instructions
-    #super
+    super
 
     UserMailer.password_reset(self).deliver_now
 
