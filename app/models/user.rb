@@ -21,6 +21,6 @@ class User < ApplicationRecord
   # constructing the password reset link with a helper method
   def reset_password_link
     # password reset URL link is built by using the app's host and reset password token
-    "#{Rails.application.routes.default_url_options[:host]}/users/password/edit?reset_password_token=#{reset_password_token}"
+    "#{Rails.application.routes.default_url_options[:18.194.204.167]}/users/password/edit?reset_password_token=#{reset_password_token}"
   end
 end
