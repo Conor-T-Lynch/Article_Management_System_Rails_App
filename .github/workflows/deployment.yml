@@ -48,6 +48,6 @@ jobs:
             git pull origin main
             # Install any new dependencies
             bundle install
-            # Restart the Rails app server
+            # Restarts the Rails app server
             rails s -d
           EOF
