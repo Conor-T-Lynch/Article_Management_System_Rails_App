@@ -5,13 +5,13 @@ on:
     branches:
         # Trigger deployment on push to main branch
       - main
-  # Allow manual trigger of the workflow  
-  workflow_dispatch:  
+  # Allow manual trigger of the workflow
+  workflow_dispatch:
 
 jobs:
   deploy:
     # Use Ubuntu runner for GitHub Actions
-    runs-on: ubuntu-latest  
+    runs-on: ubuntu-latest
 
     steps:
       # Checkout the repository code
@@ -22,7 +22,8 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3.5'  # Specify the Ruby version used by your app
+          # Specify the Ruby version used by your app
+          ruby-version: '3.3.5'
 
       # Install dependencies
       - name: Install dependencies
@@ -34,11 +35,12 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY_BASE64 }}" | base64 --decode > ~/.ssh/RSA.pem
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/RSA.pem
           chmod 600 ~/.ssh/RSA.pem
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: SSH into EC2 and navigate to Rails app
+      # SSH into EC2 and navigate to Rails app
+      - name: SSH into EC2 and deploy app
         env:
           HOST: ${{ secrets.EC2_HOST }}
         run: |
@@ -48,6 +50,6 @@ jobs:
             git pull origin main
             # Install any new dependencies
             bundle install
-            # Restarts the Rails app server
+            # Restart the Rails app server
             rails s -d
           EOF
