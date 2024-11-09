@@ -41,24 +41,22 @@ jobs:
           # Create .ssh directory if it doesn’t exist
           mkdir -p ~/.ssh
 
-          # Write the SSH private key directly to RSA.pem using heredoc syntax
-          cat << 'EOF' > ~/.ssh/RSA.pem
-          ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-              EOF
-              chmod 600 ~/.ssh/RSA.pem
+          # Write the SSH private key directly to RSA.pem and ensure no extra characters
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/RSA.pem
 
-              # Verify key format by counting lines (typically 16-20 for RSA keys)
-              cat ~/.ssh/RSA.pem | wc -l  # Verify key lines
+          # Set strict permissions on the private key file to ensure it's not accessible by others
+          chmod 600 ~/.ssh/RSA.pem
 
-              # Use ssh-keyscan to add host to known_hosts, to avoid host verification prompts
-              ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          # Verify key format by counting lines (typically 16-20 for RSA keys)
+          cat ~/.ssh/RSA.pem | wc -l  # Verify key lines
 
-              # Check permissions of .ssh directory
-              ls -la ~/.ssh  # This should show RSA.pem with correct permissions
+          # Use ssh-keyscan to add the host to known_hosts to avoid host verification prompts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Start SSH Agent and add key (alternative approach for key management)
-      - name: Start SSH Agent and Add Key
-        run: |
+          # Check permissions of .ssh directory to confirm RSA.pem has 600 permissions
+          ls -la ~/.ssh  # This should show RSA.pem with 600 permissions
+
+          # Test SSH connection to confirm everything works
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/RSA.pem
 
