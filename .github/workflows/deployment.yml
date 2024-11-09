@@ -13,9 +13,7 @@ jobs:
     # Use Ubuntu runner for GitHub Actions
     runs-on: ubuntu-latest
 
-    env:
-      # Enforce Node.js 20 for actions
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
+    
 
     steps:
       # Checkout the repository code
