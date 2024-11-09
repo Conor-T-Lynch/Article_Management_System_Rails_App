@@ -5,7 +5,7 @@ on:
     branches:
       # Trigger deployment on push to main branch
       - main
-  # Allow manual trigger of the workflow
+      # Allow manual trigger of the workflow
   workflow_dispatch:
 
 jobs:
@@ -35,30 +35,32 @@ jobs:
           gem install bundler
           bundle install
 
-      # Set up SSH access to EC2 instance with additional troubleshooting steps
+      # Set up SSH access to EC2 instance
       - name: Set up SSH
         run: |
           # Create .ssh directory if it doesn’t exist
           mkdir -p ~/.ssh
-          
-          # Add the SSH private key to the RSA.pem file and ensure proper permissions
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/RSA.pem
-          chmod 600 ~/.ssh/RSA.pem
 
-          # Verify key format by counting lines (typically 16-20 for RSA keys)
-          cat ~/.ssh/RSA.pem | wc -l  # Verify key lines
+          # Write the SSH private key directly to RSA.pem using heredoc syntax
+          cat << 'EOF' > ~/.ssh/RSA.pem
+          ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+              EOF
+              chmod 600 ~/.ssh/RSA.pem
 
-          # Use ssh-keyscan to add host to known_hosts, to avoid host verification prompts
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+              # Verify key format by counting lines (typically 16-20 for RSA keys)
+              cat ~/.ssh/RSA.pem | wc -l  # Verify key lines
 
-          # Check permissions of .ssh directory
-          ls -la ~/.ssh  # This should show RSA.pem with correct permissions
+              # Use ssh-keyscan to add host to known_hosts, to avoid host verification prompts
+              ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Start SSH Agent and add the key (alternative approach for better key management)
+              # Check permissions of .ssh directory
+              ls -la ~/.ssh  # This should show RSA.pem with correct permissions
+
+      # Start SSH Agent and add key (alternative approach for key management)
       - name: Start SSH Agent and Add Key
         run: |
           eval "$(ssh-agent -s)"
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          ssh-add ~/.ssh/RSA.pem
 
       # Test SSH Connection to ensure access to the EC2 instance works
       - name: Test SSH Connection
