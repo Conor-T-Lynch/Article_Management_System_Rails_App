@@ -5,7 +5,7 @@ on:
     branches:
       # Trigger deployment on push to main branch
       - main
-      # Allow manual trigger of the workflow
+  # Allow manual trigger of the workflow
   workflow_dispatch:
 
 jobs:
@@ -35,22 +35,39 @@ jobs:
           gem install bundler
           bundle install
 
-      # Set up SSH access to EC2 instance
+      # Set up SSH access to EC2 instance with additional troubleshooting steps
       - name: Set up SSH
         run: |
+          # Create .ssh directory if it doesn’t exist
           mkdir -p ~/.ssh
+          
+          # Add the SSH private key to the RSA.pem file and ensure proper permissions
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/RSA.pem
           chmod 600 ~/.ssh/RSA.pem
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-          ls -la ~/.ssh  # Check permissions
+
+          # Verify key format by counting lines (typically 16-20 for RSA keys)
           cat ~/.ssh/RSA.pem | wc -l  # Verify key lines
 
+          # Use ssh-keyscan to add host to known_hosts, to avoid host verification prompts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+          # Check permissions of .ssh directory
+          ls -la ~/.ssh  # This should show RSA.pem with correct permissions
+
+      # Start SSH Agent and add the key (alternative approach for better key management)
+      - name: Start SSH Agent and Add Key
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+
+      # Test SSH Connection to ensure access to the EC2 instance works
       - name: Test SSH Connection
         env:
           HOST: ${{ secrets.EC2_HOST }}
         run: |
           ssh -i ~/.ssh/RSA.pem -o StrictHostKeyChecking=no ubuntu@$HOST "echo 'Connection successful'"
 
+      # Deploy to EC2 by pulling the latest code and restarting Rails server
       - name: Deploy to EC2
         env:
           HOST: ${{ secrets.EC2_HOST }}
