@@ -59,6 +59,7 @@ jobs:
           # Test SSH connection to confirm everything works
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/RSA.pem
+          cat ~/.ssh/RSA.pem | wc -l
 
       # Test SSH Connection to ensure access to the EC2 instance works
       - name: Test SSH Connection
