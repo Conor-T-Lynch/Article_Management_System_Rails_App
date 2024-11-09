@@ -3,15 +3,19 @@ name: Deploy to EC2
 on:
   push:
     branches:
-        # Trigger deployment on push to main branch
+      # Trigger deployment on push to main branch
       - main
-  # Allow manual trigger of the workflow
+      # Allow manual trigger of the workflow
   workflow_dispatch:
 
 jobs:
   deploy:
     # Use Ubuntu runner for GitHub Actions
     runs-on: ubuntu-latest
+
+    env:
+      # Enforce Node.js 20 for actions
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
 
     steps:
       # Checkout the repository code
